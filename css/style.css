@@ -1,0 +1,99 @@
+/* Tag attributes */
+
+body {
+  font-family: sans-serif;
+  background: rgb(27, 25, 31);
+  color: rgb(255, 255, 255);
+}
+input:focus {
+  outline: none;
+}
+a {
+  text-decoration: inherit;
+  font-style: inherit;
+  color: inherit;
+}
+a:link, a:visited {
+ border:none;
+ text-decoration:underline;
+ font-style:normal;
+ color: rgb(255, 255, 255);
+}
+a:hover {
+ text-decoration: none;
+ color: rgb(255, 255, 255);
+}
+/* Created classes*/
+.profile-img{
+  height: 50px;
+  width: 50px;
+  margin: 10px 0px 10px 10px;
+}
+.offline{
+  box-shadow: -10px 0px 0px rgb(226, 219, 240);
+}
+.online{
+  box-shadow: -10px 0px 0px rgb(55, 255, 120);
+}
+.status-row{
+  border-bottom: rgb(186, 163, 227) solid 2px;
+}
+.text-vcenter{
+  height: 70px;
+  line-height: 70px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+@media (max-width: 768px) {
+  .text-vcenter{
+    height: 35px;
+    line-height: 35px;
+  }
+}
+.icon-vcenter{
+  height: 70px;
+  line-height: 70px;
+}
+.delete-icon{
+  color: rgb(100,65,165);
+  cursor: pointer;
+}
+.delete-icon:hover{
+  color: rgb(59, 32, 100);
+}
+.username, .stream, .delete-icon {
+  vertical-align: middle;
+}
+.btn-purple {
+  background: rgb(100,65,165);
+  color: rgb(255, 255, 255);
+}
+.btn-purple:hover, .btn-purple:focus, .btn-purple:active, .btn-purple.active {
+  background: rgb(59, 32, 100);
+  color: rgb(255, 255, 255);
+}
+.btn-purple:active, .btn-purple.active {
+  background: rgb(59, 32, 100) !important;
+}
+
+/* Created IDs */
+#twitch-name{
+  height: 40px;
+}
+#twitch-logo{
+  height: 25px;
+}
+#search-block{
+  padding: 10px 0 15px 0;
+  border-bottom: rgb(186, 163, 227) solid 2px;
+}
+#footer-block{
+  padding-top: 25px;
+}
+
+/* Modified bootstrap classes */
+
+.btn:focus, .btn:active:focus, .btn.active:focus {
+  outline: none;
+}
