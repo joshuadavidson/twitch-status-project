@@ -31,55 +31,31 @@ function getCookieValue(cookieName) {
 //function constructor for channel objects
 function Channel(username) {
   this.username = username;
-  this.channelJSON = {};
-  this.userJSON = {};
 }
 
-//Add method to promise so that each channel object receives it
-//get Twitch channel information as a promise
+//function that returns ajax promise to retrieve channel info bound to channel object
 Channel.prototype.getChannelInfo = function() {
-  var self = this; //ensure that the Channel object is visible within the promise
-  return new Promise(function(resolve, reject) {
-    $.ajax({
-      url: 'https://api.twitch.tv/kraken/streams/' + self.username,
-      data: {
-        'client_id': '9gqb16o5nkdypg2smko1jqmipl2hg0l'
-      },
-      dataType: 'jsonp',
-      type: 'GET',
-      success: function(channelData) {
-        self.channelJSON = channelData; //store the data from Twitch
-        resolve(); //resolve the promise with nothing to return
-      },
-      error: function(err) {
-        console.log('Twitch API call failed: Get Channel Info' + err);
-        reject(err);
-      }
-    });
+  var self = this; //ensure that the Channel object is visible within the ajax promise
+  return $.ajax({ //return the ajax promise
+    url: 'https://api.twitch.tv/kraken/streams/' + self.username,
+    data: {
+      'client_id': '9gqb16o5nkdypg2smko1jqmipl2hg0l'
+    },
+    dataType: 'jsonp',
+    type: 'GET'
   });
 }
 
-//Add method to promise so that each channel object receives it
-//get Twitch user information as a promise
+//function that returns ajax promise to retrieve user info bound to channel object
 Channel.prototype.getUserInfo = function() {
-  var self = this; //ensure that the Channel object is visible within the promise
-  return new Promise(function(resolve, reject) {
-    $.ajax({
-      url: 'https://api.twitch.tv/kraken/users/' + self.username,
-      data: {
-        'client_id': '9gqb16o5nkdypg2smko1jqmipl2hg0l'
-      },
-      dataType: 'jsonp',
-      type: 'GET',
-      success: function(userData) {
-        self.userJSON = userData;
-        resolve();
-      },
-      error: function(err) {
-        console.log('Twitch API call failed: Get User Info' + err);
-        reject(err);
-      }
-    });
+  var self = this; //ensure that the Channel object is visible within the ajax promise
+  return $.ajax({ //return the ajax promise
+    url: 'https://api.twitch.tv/kraken/users/' + self.username,
+    data: {
+      'client_id': '9gqb16o5nkdypg2smko1jqmipl2hg0l'
+    },
+    dataType: 'jsonp',
+    type: 'GET'
   });
 }
 
@@ -89,13 +65,15 @@ Channel.prototype.getTwitchData = function() {
   var self = this; //ensure that the Channel object is visible within the promise
 
   return new Promise(function(resolve, reject) { //crate a promise that will ensure both ajax requests complete
-    Promise.all([//use all to run both promises in parallel
+    Promise.all([ //use all to run both promises in parallel
       self.getChannelInfo(),
       self.getUserInfo()
-    ]).then(function(){//when both of the above promises complete, resolve the getTwitchData promise
+    ]).then(function(twitchData) { //when both of the above promises complete, update data and resolve the getTwitchData promise
+      self.channelJSON = twitchData[0];
+      self.userJSON = twitchData[1];
       resolve(self);
-    }).catch(function(err){//if either of the above promises error, throw the error
-      reject(err);
+    }).catch(function(err) { //if either of the above promises error, throw the error
+      reject(jqXHR, textStatus, errorThrown);
     });
   });
 }
@@ -150,8 +128,10 @@ $(document).ready(function() {
 
   //ensure that all channels have been populated with data
   for (var channel of Streamers.channelList) {
-    channel.getTwitchData().then(function(channel){
-      console.log(channel.userJSON.logo);
+    channel.getTwitchData().then(function(channel) {
+      console.log(channel.username, channel.channelJSON.stream.game);
+    }).catch(function(err) {
+      console.log(err);
     });
   }
 
