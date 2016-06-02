@@ -27,64 +27,23 @@
 
   <main class="container-fluid">
     <div class="row">
-      <div class="col-md-8 col-md-offset-2">
+      <div class="col-md-6 col-md-offset-3">
 
-        <header class="row" id="header-block">
+        <header class="row navbar navbar-default navbar-fixed-top" id="header-block">
           <div class="col-md-12 text-center">
             <h2><img id="twitch-name" src="./img/Twitch_Logo_White.png" alt="Twitch" /> Stream Status</h2>
           </div>
+          <div class="row">
+            <form class="input-group col-xs-6 col-xs-offset-3 text-center" id="username-form">
+              <input class="form-control" id="username-input" type="text" name="username" placeholder="Twitch Username">
+              <span class="input-group-btn">
+                <button class="btn btn-purple" id="username-button" type="submit">Get Status</button>
+            </span>
+            </form>
+          </div>
         </header>
 
-        <section class="row" id="search-block">
-          <form class="input-group col-xs-6 col-xs-offset-3 text-center" id="username-form">
-            <input class="form-control" id="username-input" type="text" name="username" placeholder="Twitch Username">
-            <span class="input-group-btn">
-                <button class="btn btn-purple" id="username-button" type="submit">Add User</button>
-            </span>
-          </form>
-        </section>
-
         <section id="status-block">
-
-          <div class="row status-row">
-            <div class="col-xs-2 text-center">
-              <img class="profile-img" src="./img/coverphoto.jpg" alt="" />
-            </div>
-            <!--Delete Icon must be pushed to maintain proper height wrt image-->
-            <div class="col-xs-2 col-xs-push-8 text-center icon-vcenter">
-              <i class="delete-icon fa fa-minus-square fa-2x" title="Delete User" aria-hidden="true"></i>
-            </div>
-
-            <div class="col-sm-3 col-xs-8 col-xs-pull-2 text-center text-vcenter">
-              <span class="username">
-                <img id="twitch-logo" src="./img/GlitchIcon_white.png" alt="" />
-                <a href="#">Username</a>
-              </span>
-            </div>
-
-            <div class="col-sm-5 col-xs-8 col-xs-pull-2 text-center text-vcenter">
-              <span class="stream">StarCraft II: RERUN: Feats vs. DIMAGA - Group D Ro16 - WCS European PremStarCraft II: RERUN: Feats vs. DIMAGA - Group D Ro16 - WCS European Prem</span>
-            </div>
-          </div>
-
-
-          <div class="row status-row">
-            <div class="col-xs-2 text-center">
-              <img class="profile-img" src="./img/coverphoto.jpg" alt="" />
-            </div>
-            <!--Delete Icon must be pushed to maintain proper height wrt image-->
-            <div class="col-xs-2 col-xs-push-8 text-center icon-vcenter">
-              <i class="delete-icon fa fa-minus-square fa-2x" title="Delete User" aria-hidden="true"></i>
-            </div>
-
-            <div class="col-sm-3 col-xs-8 col-xs-pull-2 text-center text-vcenter">
-              <span class="username"><a href="#">Username</a></span>
-            </div>
-
-            <div class="col-sm-5 col-xs-8 col-xs-pull-2 text-center text-vcenter">
-              <span class="stream">StarCraft II: RERUN: Feats vs. DIMAGA - Group D Ro16 - WCS European PremStarCraft II: RERUN: Feats vs. DIMAGA - Group D Ro16 - WCS European Prem</span>
-            </div>
-          </div>
 
         </section>
 
