@@ -105,7 +105,7 @@ Channel.prototype.getHTML = function() {
     //column for username
     '<div class="col-sm-3 col-xs-8 col-xs-pull-2 text-center text-vcenter">' +
     '<span class="username"><img id="twitch-logo" src="./img/GlitchIcon_white.png" alt="" />' +
-    '<a href="' + channelURL + '">' + displayName + '</a></span></div>' +
+    '<a href="' + channelURL + '" target="_blank">' + displayName + '</a></span></div>' +
     //column for game/status
     '<div class="col-sm-5 col-xs-8 col-xs-pull-2 text-center text-vcenter">' +
     '<span class="status">' + status + '</span></div></div>';
