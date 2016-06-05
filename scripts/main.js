@@ -62,7 +62,6 @@ Channel.prototype.getUserInfo = function() {
   });
 }
 
-//Add method to promise so that each channel object receives it
 //get Twitch data asynchronously by using a promise
 Channel.prototype.getTwitchData = function() {
   var self = this; //ensure that the Channel object is visible within the promise
@@ -71,8 +70,9 @@ Channel.prototype.getTwitchData = function() {
       self.getChannelInfo(),
       self.getUserInfo()
     ]).then(function(twitchData) { //when both of the above promises complete, update data and resolve the getTwitchData promise
-      self.channelJSON = twitchData[0];
-      self.userJSON = twitchData[1];
+      self.channelJSON = twitchData[0]; //save the twitch data to the channel object.
+      self.userJSON = twitchData[1]; //save the twitch data to the channel object.
+      self.getHTML(); //generate the HTML for the page
       resolve(self); //return the channel object once resolved
     }).catch(function(err) { //if either of the above promises error, throw the error
       reject(jqXHR, textStatus, errorThrown); //if there is an error return the error
@@ -80,11 +80,12 @@ Channel.prototype.getTwitchData = function() {
   });
 }
 
+//function to generate the HTML needed for each channel
 Channel.prototype.getHTML = function() {
   var state = this.channelJSON.stream ? 'online' : 'offline'; //get the online state of the user, if stream exists
   var logoURL = this.userJSON.logo || './img/GlitchIcon_white.png'; //show the default twitch icon if no logo is present
   var channelURL = 'https://www.twitch.tv/' + this.username; //generate the channel url by appending username to twitch.tv
-  var displayName = this.channelJSON.display_name || this.username; //if the user has a display name use it other wise use the typed in username
+  var displayName = this.userJSON.display_name || this.username; //if the user has a display name use it other wise use the typed in username
   var status; //status to display
 
   if (this.channelJSON.stream === null) { //if valid user but not streaming show status offline
@@ -98,17 +99,19 @@ Channel.prototype.getHTML = function() {
   this.html = '<div class="row stream-row">' + //main row container for stream data
     //column for profile logo
     '<div class="col-xs-2 text-center">' +
-    '<img class="profile-img ' + state + '" src="' + logoURL + '" /></div>' +
+    '<a href="' + channelURL + '" target="_blank"><img class="profile-img ' + state + '" src="' + logoURL + '" /></a></div>' +
     //column for delete-icon
     '<div class="col-xs-2 col-xs-push-8 text-center icon-vcenter">' +
     '<i class="delete-icon fa fa-minus-square fa-2x" title="Delete User" aria-hidden="true"></i></div>' +
     //column for username
-    '<div class="col-sm-3 col-xs-8 col-xs-pull-2 text-center text-vcenter">' +
-    '<span class="username"><img id="twitch-logo" src="./img/GlitchIcon_white.png" alt="" />' +
+    '<div class="col-sm-3 col-xs-8 col-xs-pull-2 text-left text-vcenter">' +
+    '<span class="username"><i class="user-icon fa fa-user fa-lg" title="Username" aria-hidden="true"></i> ' +
     '<a href="' + channelURL + '" target="_blank">' + displayName + '</a></span></div>' +
     //column for game/status
-    '<div class="col-sm-5 col-xs-8 col-xs-pull-2 text-center text-vcenter">' +
-    '<span class="status">' + status + '</span></div></div>';
+    '<div class="col-sm-5 col-xs-8 col-xs-pull-2 text-left text-vcenter">' +
+    '<i class="game-icon fa fa-gamepad fa-lg" title="Status" aria-hidden="true"></i> <span class="status">' + status + '</span></div></div>';
+
+  $('#status-block').prepend(this.html); //As soon as HTML is generated show it on the page
 
   return this.html;
 }
@@ -125,7 +128,7 @@ var Streamers = {
       if (getCookieValue('usernameList') !== '') { //Get previous list of usernames
         self.usernameList = getCookieValue('usernameList').split(',');
       } else { //Use default list
-        self.usernameList = ['ESL_SC2', 'freecodecamp', 'jwaynedavidson', 'brunofin'];
+        self.usernameList = ['ESL_SC2', 'freecodecamp', 'jwaynedavidson'];
         setCookie('usernameList', self.usernameList);
       };
 
@@ -148,41 +151,47 @@ var Streamers = {
     });
   },
 
+  //function to add a username
   addUser: function(username) {
     this.usernameList.unshift(username); //add the username to the usernameList
     this.channelList.unshift(new Channel(username)); //add the empty channel to the channeList
 
-    this.channelList[0].getTwitchData() //get the twitch data
-      .then(function(channel) {
-        $('#status-block').prepend(channel.getHTML()); //once twitch data is obtained add to the top of the page
-      }).catch(function(err) {
+    this.channelList[0].getTwitchData().catch(function(err) {
         console.log(err);
       });
   },
 
+  //function to remove username
   removeUser: function(username) {
-    var self = this; //set self equal to Streamers object for use in functions
-    var usernameIndex = this.usernameList.findIndex(function(value, index){//find the index of the username in the list
-      return username.toLowerCase() === value.toLowerCase();
-    });
+    var usernameIndex = this.findUsernameIndex(username);
+    var channelIndex = this.findChannelIndex(username);
 
-    var channelIndex = function(){//IIFE for getting index of channelList containing username
-      for (var i = 0; i < self.channelList.length; i++){
-        console.log(self.channelList[i].username);
-        if (self.channelList[i].username.toLowerCase() === username.toLowerCase()){
-          return i;
-        }
-      }
-    }();
-
-    if (usernameIndex >= 0){ //if username was found remove it from the list
+    if (usernameIndex >= 0) { //if username was found remove it from the list
       this.usernameList.splice(usernameIndex, 1);
     }
 
-    if (channelIndex >=0) { //if channel with given username is found remove it from the list
+    if (channelIndex >= 0) { //if channel with given username is found remove it from the list
       this.channelList.splice(channelIndex, 1);
     }
   },
+
+  //function to take username and return usernameList index, -1 if DNE
+  findUsernameIndex: function(username) {
+    return this.usernameList.findIndex(function(value) { //find the index of the username in the list
+      return username.toLowerCase() === value.toLowerCase();
+    });
+  },
+
+  //function to take username and return channelList index, -1 if DNE
+  findChannelIndex: function(username) {
+    for (var i = 0; i < this.channelList.length; i++) {
+      if (this.channelList[i].username.toLowerCase() === username.toLowerCase()) {
+        return i;
+      }
+    }
+  },
+
+  
 
   saveToCookie: function() {
     setCookie('usernameList', this.usernameList);
@@ -192,18 +201,13 @@ var Streamers = {
 
 $(document).ready(function() {
   //initialize the Streamers object and pull data from Twitch
-  Streamers.initialize()
-    .then(function(channels) {
-      for (var channel of channels) {//once complete iterate through the channels to populate html
-        $('#status-block').append(channel.getHTML());
-      }
-    }).catch(function(err) {
-      console.log(err);
-    });
+  Streamers.initialize().catch(function(err) {
+    console.log(err);
+  });
 
   //Delete stream when user clicks on delete-icon
   $('#status-block').on('click', '.delete-icon', function() {
-    var username = $(this).parent().parent().find('a').html(); //find the username in the div
+    var username = $(this).parent().parent().find('span > a').html(); //find the username in the div
     Streamers.removeUser(username); //remove the user from the Streamers object
     $(this).parent().parent().remove(); //remove the row from the html
   });
@@ -211,14 +215,17 @@ $(document).ready(function() {
   //add a user via the form
   $('#username-form').submit(function(event) {
     var inputValue = document.getElementById('username-input').value; //store the input from the input box
-    if (/^[a-zA-Z0-9_]{3,25}$/.test(inputValue)) { //check to see if username is valid Twitch username
+    if (/^[a-zA-Z0-9_]{3,25}$/.test(inputValue) && Streamers.findUsernameIndex(inputValue) === -1) { //check to see if username is valid Twitch username and not in list
       Streamers.addUser(inputValue); //add the user
       this.reset(); //clear the form after submitting
       event.preventDefault(); //prevent default submit which reloads page
-    } else {
+    } else if (Streamers.findUsernameIndex(inputValue) !== -1) { //If username is already in list alert user
+      alert('Username already exists.');
+      event.preventDefault(); //prevent default submit which reloads page
+    } else if (!(/^[a-zA-Z0-9_]{3,25}$/.test(inputValue))) { //If username is invalid alert user
       alert('Invalid Twitch username entered.');
       event.preventDefault(); //prevent default submit which reloads page
-    }
+    };
   });
 
   //before closing or refreshing update the cookie with the most recent usernameList
