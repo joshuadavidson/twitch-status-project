@@ -157,8 +157,8 @@ var Streamers = {
     this.channelList.unshift(new Channel(username)); //add the empty channel to the channeList
 
     this.channelList[0].getTwitchData().catch(function(err) {
-        console.log(err);
-      });
+      console.log(err);
+    });
   },
 
   //function to remove username
@@ -190,8 +190,6 @@ var Streamers = {
       }
     }
   },
-
-  
 
   saveToCookie: function() {
     setCookie('usernameList', this.usernameList);
