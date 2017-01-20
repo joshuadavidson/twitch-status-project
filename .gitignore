@@ -1,6 +1,10 @@
 # Project Specific #
 ####################
+node_modules
 .tern-project
+.jshintrc
+.htmlhintrc
+.env
 
 # Compiled source #
 ###################
