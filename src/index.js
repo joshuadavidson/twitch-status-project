@@ -19,10 +19,11 @@ function setCookie(cookieName, cookieValue, expiryDays) {
 function getCookieValue(cookieName) {
   const cookieNameLookup = `${cookieName}=`;
   const allCookies = document.cookie.split(';');
+
   for (let i = 0; i < allCookies.length; i += 1) {
     const currentCookie = allCookies[i];
     if (currentCookie.indexOf(cookieNameLookup) === 0) {
-      return currentCookie.substring(cookieName.length, currentCookie.length);
+      return currentCookie.substring(cookieNameLookup.length, currentCookie.length);
     }
   }
   return '';
@@ -203,14 +204,18 @@ const Streamers = {
 
   // function to add a username
   addUser(username) {
-    // add the username to the usernameList
-    this.usernameList.unshift(username);
-    // add the empty channel to the channeList
-    this.channelList.unshift(new Channel(username));
+    const self = this;
 
-    this.channelList[0].getTwitchData()
-    .catch((err) => {
-      console.log(err);
+    new Channel(username).getTwitchData()
+    // ensure request for data was good before adding channel
+    .then(() => {
+      // add the username to the usernameList
+      self.usernameList.unshift(username);
+      // add the channel to the channeList
+      self.channelList.unshift(this);
+    })
+    .catch(() => {
+      window.alert(`${username} could not be found on Twitch.tv.`);
     });
   },
 
@@ -233,7 +238,8 @@ const Streamers = {
   // function to take username and return usernameList index, -1 if DNE
   findUsernameIndex(username) {
     // find the index of the username in the list
-    return this.usernameList.findIndex(value => username.toLowerCase() === value.toLowerCase());
+    return this.usernameList
+      .findIndex(value => username.trim().toLowerCase() === value.toLowerCase());
   },
 
   // function to take username and return channelList index, -1 if DNE
@@ -286,7 +292,7 @@ $(document).ready(() => {
     }
     // If username is already in list alert user
     else if (Streamers.findUsernameIndex(inputValue) !== -1) {
-      window.alert('Username already exists.');
+      window.alert('Username already in your list.');
       // prevent default submit which reloads page
       event.preventDefault();
     }
