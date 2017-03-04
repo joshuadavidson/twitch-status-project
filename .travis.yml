@@ -1,0 +1,33 @@
+language: node_js
+node_js:
+  - "6"
+cache:
+  directories:
+    # cache the node_modules folder between builds
+    - node_modules
+install:
+  # install all dependencies for webpack build
+  - npm install
+  # cloudfront-invalidate-cli is required for invalidation of CloudFront distributions
+  # cloudfront-invalidate-cli requires the use of aws-sdk, ini, and yargs
+  - npm install cloudfront-invalidate-cli aws-sdk ini yargs
+script: npm run build-prod
+deploy:
+  # deploy only on branch master
+  on:
+    branch: master
+  provider: s3
+  # AWS IAM Keys
+  access_key_id: $AWS_ACCESS_KEY_ID
+  secret_access_key: $AWS_SECRET_ACCESS_KEY
+  # Name of the S3 bucket
+  bucket: $BUCKET_NAME
+  # Path to a directory containing built site
+  local_dir: dist
+  # keep the dist folder created by webpack so that travis can upload to s3
+  skip_cleanup: true
+  # Set the Access Control List Permissions to Public read only
+  acl: public_read
+after_deploy:
+  # Invalidate every object in the targeted distribution using cloudfront-invalidate-cli
+  - cf-invalidate $CLOUD_FRONT_ID /*

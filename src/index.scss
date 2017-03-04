@@ -1,5 +1,14 @@
-/* Tag attributes */
+// declare all variables before bootstrap import to override defaults
+// set asset helper to true to allow paths to bootstrap fonts to resolve when compiling
+$bootstrap-sass-asset-helper: true;
+@import '../node_modules/bootstrap-sass/assets/stylesheets/_bootstrap.scss';
 
+// import font awesome, set fontpath so that font urls resolve during compilation
+$fa-font-path: "../node_modules/font-awesome/fonts";
+@import '../node_modules/font-awesome/scss/font-awesome';
+
+
+/* Tag attributes */
 body {
   font-family: sans-serif;
   background: rgb(27, 25, 31);

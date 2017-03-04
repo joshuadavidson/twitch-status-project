@@ -1,5 +1,10 @@
 /* establish global variables for ESLint */
-/* global $ document window */
+/* global document window */
+
+import $ from 'jquery';
+
+// import custom styles for project
+import './index.scss';
 
 // Set a cookie with supplied name, value, and expiry
 function setCookie(cookieName, cookieValue, expiryDays) {

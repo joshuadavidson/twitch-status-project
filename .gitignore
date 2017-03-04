@@ -1,6 +1,7 @@
 # Project Specific #
 ####################
 node_modules
+dist
 .tern-project
 .jshintrc
 .htmlhintrc
